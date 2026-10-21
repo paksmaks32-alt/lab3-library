@@ -1,0 +1,105 @@
+{
+  "libraryName": "Бібліотека факультету електроніки та комп'ютерних технологій",
+  "books": [
+    {
+      "id": 1,
+      "title": "Алгоритми і структури даних",
+      "authors": [
+        "Ніклаус Вірт"
+      ],
+      "publicationYear": 2018,
+      "copies": [
+        {
+          "inventoryNumber": "INV-1001",
+          "isAvailable": true,
+          "borrowHistory": [
+            {
+              "borrower": "Олександр Іваненко",
+              "borrowDate": "2026-05-10",
+              "returnDate": "2026-06-15"
+            },
+            {
+              "borrower": "Ірина Коваль",
+              "borrowDate": "2026-06-20",
+              "returnDate": "2026-07-04"
+            }
+          ]
+        },
+        {
+          "inventoryNumber": "INV-1002",
+          "isAvailable": false,
+          "borrowHistory": [
+            {
+              "borrower": "Максим",
+              "borrowDate": "2026-09-01",
+              "returnDate": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Чистий код",
+      "authors": [
+        "Роберт Мартін",
+        "Дін Корнет"
+      ],
+      "publicationYear": 2022,
+      "copies": [
+        {
+          "inventoryNumber": "INV-2001",
+          "isAvailable": true,
+          "borrowHistory": []
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Чиста архітектура",
+      "authors": [
+        "Роберт Мартін"
+      ],
+      "publicationYear": 2021,
+      "copies": [
+        {
+          "inventoryNumber": "INV-3001",
+          "isAvailable": false,
+          "borrowHistory": [
+            {
+              "borrower": "Ірина Коваль",
+              "borrowDate": "2026-10-01",
+              "returnDate": null
+            }
+          ]
+        },
+        {
+          "inventoryNumber": "INV-3002",
+          "isAvailable": true,
+          "borrowHistory": [
+            {
+              "borrower": "Андрій Мельник",
+              "borrowDate": "2026-03-12",
+              "returnDate": "2026-04-02"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Мистецтво програмування. Том 1",
+      "authors": [
+        "Дональд Кнут"
+      ],
+      "publicationYear": 2019,
+      "copies": [
+        {
+          "inventoryNumber": "INV-4001",
+          "isAvailable": true,
+          "borrowHistory": []
+        }
+      ]
+    }
+  ]
+}
