@@ -131,6 +131,54 @@ program
   );
 
 // ---------------------------------------------------------------------------
+// 3. Загальні можливості: перелік, один елемент, окреме поле
+// ---------------------------------------------------------------------------
+
+program
+  .command('list')
+  .description('показати стислий список книг')
+  .option('-l, --limit <кількість>', 'показати не більше вказаної кількості книг')
+  .action((options, command) => {
+    const books = booksFor(command);
+    const limit = options.limit === undefined
+      ? books.length
+      : parsePositiveInt(options.limit, 'Значення --limit');
+    books.slice(0, limit).forEach((book) => console.log(bookLine(book)));
+    console.log(`Показано ${Math.min(limit, books.length)} з ${books.length}`);
+  });
+
+program
+  .command('show')
+  .description('показати одну книгу з усіма полями')
+  .argument('<id>', 'ідентифікатор книги (поле id)')
+  .action((id, options, command) => {
+    printJson(findBook(booksFor(command), id));
+  });
+
+program
+  .command('get')
+  .description('показати значення окремого поля книги, зокрема вкладеного')
+  .argument('<id>', 'ідентифікатор книги (поле id)')
+  .argument('<шлях>', 'шлях до поля через крапку, напр. copies.0.inventoryNumber або copies[0].borrowHistory')
+  .action((id, path, options, command) => {
+    const book = findBook(booksFor(command), id);
+    // copies[0].isAvailable → copies.0.isAvailable → ['copies', '0', 'isAvailable']
+    const keys = path.replace(/\[(\d+)\]/g, '.$1').split('.').filter((key) => key !== '');
+    if (keys.length === 0) throw new UserError('Шлях до поля порожній', EXIT_USAGE_ERROR);
+
+    let current = book;
+    for (const key of keys) {
+      // Поле відсутнє, якщо його немає як власного ключа (або йти далі нікуди).
+      // Поле зі значенням null — присутнє, і ми друкуємо null.
+      if (current === null || typeof current !== 'object' || !Object.hasOwn(current, key)) {
+        throw new UserError(`Поля «${path}» у книзі ${book.id} немає (бракує «${key}»)`);
+      }
+      current = current[key];
+    }
+    printJson(current);
+  });
+
+// ---------------------------------------------------------------------------
 // 5. Запуск і обробка помилок
 // ---------------------------------------------------------------------------
 
