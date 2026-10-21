@@ -179,6 +179,76 @@ program
   });
 
 // ---------------------------------------------------------------------------
+// 4. Можливості варіанта 10 «Бібліотека»
+// ---------------------------------------------------------------------------
+
+program
+  .command('author')
+  .description('знайти книги автора за частиною імені (без урахування регістру)')
+  .argument('<частина-імені>', 'частина імені або прізвища автора')
+  .action((part, options, command) => {
+    const needle = part.trim().toLocaleLowerCase('uk');
+    if (needle === '') throw new UserError('Частина імені не може бути порожньою', EXIT_USAGE_ERROR);
+
+    const found = booksFor(command).filter((book) =>
+      book.authors.some((author) => author.toLocaleLowerCase('uk').includes(needle)));
+
+    if (found.length === 0) {
+      console.log(`Книг автора, ім'я якого містить «${part}», не знайдено`);
+      return;
+    }
+    found.forEach((book) => console.log(bookLine(book)));
+    console.log(`Знайдено книг: ${found.length}`);
+  });
+
+program
+  .command('copies')
+  .description('показати примірники книги')
+  .argument('<id>', 'ідентифікатор книги (поле id)')
+  .option('-a, --available', 'показати лише доступні примірники')
+  .action((id, options, command) => {
+    const book = findBook(booksFor(command), id);
+    const copies = options.available
+      ? book.copies.filter((copy) => copy.isAvailable)
+      : book.copies;
+
+    console.log(`«${book.title}»: примірників ${book.copies.length}, показано ${copies.length}`);
+    for (const copy of copies) {
+      if (copy.isAvailable) {
+        console.log(`  ${copy.inventoryNumber}  доступний`);
+      } else {
+        // Хто тримає примірник: запис в історії, де returnDate === null.
+        const current = copy.borrowHistory.find((record) => record.returnDate === null);
+        const holder = current ? ` (у читача: ${current.borrower} з ${current.borrowDate})` : '';
+        console.log(`  ${copy.inventoryNumber}  видано${holder}`);
+      }
+    }
+  });
+
+program
+  .command('history')
+  .description('показати історію видач конкретного примірника')
+  .argument('<інвентарний-номер>', 'інвентарний номер примірника, напр. INV-1001')
+  .action((inventoryNumber, options, command) => {
+    const wanted = inventoryNumber.toUpperCase();
+    // Примірники лежать усередині книг, тому шукаємо в усіх книгах одразу.
+    const book = booksFor(command).find((b) =>
+      b.copies.some((copy) => copy.inventoryNumber.toUpperCase() === wanted));
+    if (!book) throw new UserError(`Примірника ${inventoryNumber} немає в каталозі`);
+    const copy = book.copies.find((c) => c.inventoryNumber.toUpperCase() === wanted);
+
+    console.log(`${copy.inventoryNumber} — «${book.title}»`);
+    if (copy.borrowHistory.length === 0) {
+      console.log('  Історія видач порожня');
+      return;
+    }
+    for (const record of copy.borrowHistory) {
+      const returned = record.returnDate ?? 'не повернуто';
+      console.log(`  ${record.borrowDate} → ${returned}  ${record.borrower}`);
+    }
+  });
+
+// ---------------------------------------------------------------------------
 // 5. Запуск і обробка помилок
 // ---------------------------------------------------------------------------
 
