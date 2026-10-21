@@ -1,0 +1,23 @@
+{
+  "name": "lab3-library",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paksmaks32-alt/lab3-library.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paksmaks32-alt/lab3-library/issues"
+  },
+  "homepage": "https://github.com/paksmaks32-alt/lab3-library#readme",
+  "dependencies": {
+    "commander": "^15.0.0"
+  }
+}
