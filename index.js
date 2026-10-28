@@ -2,9 +2,9 @@
 // Бібліотечний каталог (ЛР3, варіант 10).
 // Програма читає JSON-файл із ЛР1 і відповідає на запити з командного рядка.
 
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { Command, Help, Option } from 'commander';
+const { readFileSync } = require('node:fs');
+const path = require('node:path');
+const { Command, Help, Option } = require('commander');
 
 // ---------------------------------------------------------------------------
 // 1. Константи та допоміжні функції
@@ -12,7 +12,7 @@ import { Command, Help, Option } from 'commander';
 
 // Файл за замовчуванням лежить поруч з index.js, тому програма знаходить його
 // незалежно від того, з якої теки її запустили.
-const DEFAULT_FILE = fileURLToPath(new URL('./data.json', import.meta.url));
+const DEFAULT_FILE = path.join(__dirname, 'data.json');
 
 // Коди завершення: 0 — успіх, 1 — помилка даних (файл, JSON, елемент),
 // 2 — неправильний виклик (невідома опція, пропущений аргумент, не число).
@@ -160,10 +160,10 @@ program
   .description('показати значення окремого поля книги, зокрема вкладеного')
   .argument('<id>', 'ідентифікатор книги (поле id)')
   .argument('<шлях>', 'шлях до поля через крапку, напр. copies.0.inventoryNumber або copies[0].borrowHistory')
-  .action((id, path, options, command) => {
+  .action((id, fieldPath, options, command) => {
     const book = findBook(booksFor(command), id);
     // copies[0].isAvailable → copies.0.isAvailable → ['copies', '0', 'isAvailable']
-    const keys = path.replace(/\[(\d+)\]/g, '.$1').split('.').filter((key) => key !== '');
+    const keys = fieldPath.replace(/\[(\d+)\]/g, '.$1').split('.').filter((key) => key !== '');
     if (keys.length === 0) throw new UserError('Шлях до поля порожній', EXIT_USAGE_ERROR);
 
     let current = book;
@@ -171,7 +171,7 @@ program
       // Поле відсутнє, якщо його немає як власного ключа (або йти далі нікуди).
       // Поле зі значенням null — присутнє, і ми друкуємо null.
       if (current === null || typeof current !== 'object' || !Object.hasOwn(current, key)) {
-        throw new UserError(`Поля «${path}» у книзі ${book.id} немає (бракує «${key}»)`);
+        throw new UserError(`Поля «${fieldPath}» у книзі ${book.id} немає (бракує «${key}»)`);
       }
       current = current[key];
     }
